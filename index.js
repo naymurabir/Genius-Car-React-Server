@@ -30,6 +30,35 @@ async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
+
+        const servicesCollection = client.db('geniusCarDB').collection('services')
+
+        //Server side APIs
+        // Services
+
+        //GET all data of services
+        app.get('/services', async (req, res) => {
+            const cursor = servicesCollection.find()
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+
+        // GET single data for services
+        app.get('/services/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: new ObjectId(id) }
+            const result = await servicesCollection.findOne(query)
+            res.send(result)
+        })
+
+        //POST services from client side
+        app.post('/services', async (req, res) => {
+            const newService = req.body
+            const result = await servicesCollection.insertOne(newService)
+            console.log(result);
+            res.send(result)
+        })
+
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
