@@ -33,6 +33,8 @@ async function run() {
 
         const servicesCollection = client.db('geniusCarDB').collection('services')
 
+        const checkoutCollection = client.db('geniusCarDB').collection('checkouts')
+
         //Server side APIs
         // Services
 
@@ -51,11 +53,28 @@ async function run() {
             res.send(result)
         })
 
+        // GET single data for checkout
+        app.get('/services/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: new ObjectId(id) }
+            const options = {
+                projection: { title: 1, price: 1, service_id: 1 },
+            };
+            const result = await servicesCollection.findOne(query, options)
+            res.send(result)
+        })
+
         //POST services from client side
         app.post('/services', async (req, res) => {
             const newService = req.body
             const result = await servicesCollection.insertOne(newService)
-            console.log(result);
+            res.send(result)
+        })
+
+        //POST Checkouts from client side
+        app.post('/checkout', async (req, res) => {
+            const newCheckout = req.body
+            const result = await checkoutCollection.insertOne(newCheckout)
             res.send(result)
         })
 
