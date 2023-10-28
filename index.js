@@ -90,6 +90,21 @@ async function run() {
             res.send(result)
         })
 
+        //PATCH update Checkout from server side
+        app.patch('/checkout/:id', async (req, res) => {
+            const id = req.params.id
+            const updatedCheckout = req.body
+            const filter = { _id: new ObjectId(id) }
+
+            const updateDoc = {
+                $set: {
+                    status: updatedCheckout.status
+                },
+            };
+            const result = await checkoutCollection.updateOne(filter, updateDoc)
+            res.send(result)
+        })
+
         //DELETE Checkout from server side
         app.delete('/checkout/:id', async (req, res) => {
             const id = req.params.id
