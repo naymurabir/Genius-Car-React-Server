@@ -58,7 +58,7 @@ async function run() {
             const id = req.params.id
             const query = { _id: new ObjectId(id) }
             const options = {
-                projection: { title: 1, price: 1, service_id: 1 },
+                projection: { title: 1, price: 1, service_id: 1, img: 1 },
             };
             const result = await servicesCollection.findOne(query, options)
             res.send(result)
@@ -77,6 +77,30 @@ async function run() {
             const result = await checkoutCollection.insertOne(newCheckout)
             res.send(result)
         })
+
+        // GET checkouts from server side
+        app.get('/checkout', async (req, res) => {
+            console.log(req.query.email);
+            let query = {}
+            if (req.query?.email) {
+                query = { email: req.query?.email }
+            }
+            const cursor = checkoutCollection.find(query)
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+
+        //DELETE Checkout from server side
+        app.delete('/checkout/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: new ObjectId(id) }
+            const result = await checkoutCollection.deleteOne(query)
+            res.send(result)
+
+        })
+
+
+
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
