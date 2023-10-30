@@ -43,9 +43,8 @@ async function run() {
         //JWT Related APIs
         app.post('/jwt', async (req, res) => {
             const user = req.body
-            console.log(user);
+            console.log(user)
             const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
-
             res.cookie('token', token, {
                 httpOnly: true,
                 secure: false,
@@ -98,6 +97,7 @@ async function run() {
         // GET checkouts from server side
         app.get('/checkout', async (req, res) => {
             console.log(req.query.email);
+            console.log("Hello", req.cookies.token);
             let query = {}
             if (req.query?.email) {
                 query = { email: req.query.email }
