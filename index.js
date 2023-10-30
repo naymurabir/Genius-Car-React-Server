@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+var jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const app = express()
@@ -35,9 +36,10 @@ async function run() {
 
         const checkoutCollection = client.db('geniusCarDB').collection('checkouts')
 
+
+
         //Server side APIs
         // Services
-
         //GET all data of services
         app.get('/services', async (req, res) => {
             const cursor = servicesCollection.find()
@@ -90,7 +92,7 @@ async function run() {
             res.send(result)
         })
 
-        //PATCH update Checkout from server side
+        //PATCH Checkout from server side
         app.patch('/checkout/:id', async (req, res) => {
             const id = req.params.id
             const updatedCheckout = req.body
@@ -113,7 +115,6 @@ async function run() {
             res.send(result)
 
         })
-
 
 
 
