@@ -31,6 +31,30 @@ const client = new MongoClient(uri, {
     }
 });
 
+
+//Custom Middleware 
+const logger = async (req, res, next) => {
+    console.log("Called:", req.host, req.originalUrl);
+    next()
+}
+
+const verifyToken = async (req, res, next) => {
+    const token = req.cookies.token
+    if (!token) {
+        return res.send({ message: "Unauthorized token" })
+    }
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+        //err
+        if (err) {
+            return res.send({ message: "Unauthorized token" })
+        }
+
+        console.log("Value in the token", decoded);
+        req.user = decoded
+        next()
+    })
+}
+
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
@@ -41,7 +65,7 @@ async function run() {
         const checkoutCollection = client.db('geniusCarDB').collection('checkouts')
 
         //JWT Related APIs
-        app.post('/jwt', async (req, res) => {
+        app.post('/jwt', logger, verifyToken, async (req, res) => {
             const user = req.body
             console.log(user)
             const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
@@ -55,7 +79,7 @@ async function run() {
         //Server side APIs
         // Services
         //GET all data of services
-        app.get('/services', async (req, res) => {
+        app.get('/services', logger, async (req, res) => {
             const cursor = servicesCollection.find()
             const result = await cursor.toArray()
             res.send(result)
@@ -95,7 +119,7 @@ async function run() {
         })
 
         // GET checkouts from server side
-        app.get('/checkout', async (req, res) => {
+        app.get('/checkout', logger, verifyToken, async (req, res) => {
             console.log(req.query.email);
             console.log("Hello", req.cookies.token);
             let query = {}
