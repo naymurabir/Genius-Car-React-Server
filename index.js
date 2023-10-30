@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 var jwt = require('jsonwebtoken');
-var cookieParser = require('cookie-parser')
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const app = express()
@@ -14,7 +13,6 @@ app.use(express.json())
 
 
 // Database
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.cgjyfgp.mongodb.net/?retryWrites=true&w=majority`;
 
 // const uri = "mongodb+srv://carDoctor:SNUmO4TEwunVGpoI@cluster0.cgjyfgp.mongodb.net/?retryWrites=true&w=majority";
@@ -36,19 +34,6 @@ async function run() {
         const servicesCollection = client.db('geniusCarDB').collection('services')
 
         const checkoutCollection = client.db('geniusCarDB').collection('checkouts')
-
-        //JWT Related APIs
-        app.post('/jwt', (req, res) => {
-            const user = req.body
-            console.log(user);
-            const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
-
-            res.cookie('token', token, {
-                httpOnly: true,
-                secure: false,
-                sameSite: 'none'
-            }).send({ success: true })
-        })
 
         //Server side APIs
         // Services
@@ -127,7 +112,6 @@ async function run() {
             res.send(result)
 
         })
-
 
 
         // Send a ping to confirm a successful connection
