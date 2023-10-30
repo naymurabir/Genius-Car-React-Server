@@ -32,6 +32,7 @@ const client = new MongoClient(uri, {
 });
 
 
+
 //Custom Middleware 
 const logger = async (req, res, next) => {
     console.log("Called:", req.host, req.originalUrl);
@@ -39,7 +40,7 @@ const logger = async (req, res, next) => {
 }
 
 const verifyToken = async (req, res, next) => {
-    const token = req.cookies.token
+    const token = req.cookies?.token
     if (!token) {
         return res.send({ message: "Unauthorized token" })
     }
@@ -122,6 +123,11 @@ async function run() {
         app.get('/checkout', logger, verifyToken, async (req, res) => {
             console.log(req.query.email);
             console.log("Hello", req.cookies.token);
+
+            if (req.query?.email !== req.user.email) {
+                return res.status(403).send({ message: 'Forbidden access' })
+            }
+
             let query = {}
             if (req.query?.email) {
                 query = { email: req.query.email }
